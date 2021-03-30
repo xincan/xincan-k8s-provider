@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.com.xincan.xincanframework</groupId>
+        <artifactId>xincan-framework</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>cn.com.xincan.xincanframework.k8s</groupId>
+    <artifactId>xincan-k8s-provider</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>xincan-k8s-provider</name>
+    <description>SpringCloud Kubernetes化服务提供者</description>
+
+    <properties>
+        <!-- 构建项目编码格式版本配置 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- java JDK版本配置 -->
+        <java.version>11</java.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- 读取yml配置信息依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+        </dependency>
+
+        <!-- Web响应式框架依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- 健康检查框架依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- json处理依赖 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+
+        <!-- lombok框架依赖 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <!-- 单元测试框架依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profiles.active>dev</spring.profiles.active>
+            </properties>
+            <dependencies>
+                <!-- 集成eureka客户端依赖 -->
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>pro</id>
+            <properties>
+                <spring.profiles.active>pro</spring.profiles.active>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-kubernetes-core</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-kubernetes-discovery</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-kubernetes-loadbalancer</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.github.ben-manes.caffeine</groupId>
+                    <artifactId>caffeine</artifactId>
+                    <version>3.0.1</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
+    <!-- 构建的配置 -->
+    <build>
+
+        <!-- 这里设置构建的文件名；默认情况下文件名为：artifactId+version -->
+        <!--        <finalName>mavenproject</finalName>-->
+        <!--         构建产生的所有的文件存放的目录；默认情况下为根目录下的target文件夹，即：${basedir}/target -->
+        <directory>${basedir}/target/</directory>
+
+        <!-- 配置要使用的filter文件，这个要配合<resources/>来使用-->
+        <filters>
+            <!-- 配置要使用的filter文件的路径，用于替换掉含有变量定义的文件；常用于多环境配置多个配置文件的情况 -->
+            <filter>src/main/resources/application-${spring.profiles.active}.yml</filter>
+        </filters>
+
+        <!-- 用于定义哪些目录下的文件会被filters中指定的filter文件进行变量的替换 -->
+        <resources>
+            <resource>
+                <!-- 这里设定要替换内容的文件所在的文件夹，即：src/main/resources -->
+                <directory>src/main/resources</directory>
+                <!-- 启用过滤器 -->
+                <filtering>true</filtering>
+                <!-- 替换那些类型的源文件 -->
+                <includes>
+                    <!--
+                        配置多个需要替换的原资源文件时， 需要配置多个include
+                        *.xml:当前目录下以xml结尾的文件
+                        **/*.xml:当前目录及其子目录下以xml结尾的文件
+                     -->
+                    <include>**/*.yml</include>
+                </includes>
+                <!-- 不需要替换的源文件类型，打包后的classes目录下没有该文件 -->
+                <excludes>
+                    <exclude>**/*.hib.conf</exclude>
+                </excludes>
+                <!-- 打包后资源文件存放的位置 -->
+                <!--  <targetPath>config</targetPath>-->
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker-maven-plugin.version}</version>
+                <configuration>
+                    <!--在maven settings.xml中配置的server的id值-->
+                    <serverId>harbor</serverId>
+                    <!--打包docker镜像的docker服务器-->
+                    <dockerHost>${docker-host-url}</dockerHost>
+                    <!--镜像名称及版本[ip:port/name:tag]-->
+                    <imageName>${docker-harbor-registry-url}/xincan/${project.name}:${project.version}</imageName>
+                    <!--nexus3 hosted 仓库地址-->
+                    <registryUrl>${docker-harbor-registry-url}</registryUrl>
+                    <!--Dockerfile路径-->
+                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <!--是否强制覆盖已有镜像-->
+                    <forceTags>true</forceTags>
+                    <imageTags>
+                        <!--镜像tag-->
+                        <imageTag>${project.version}</imageTag>
+                    </imageTags>
+                    <!--复制jar包到docker容器指定目录配置-->
+                    <resources>
+                        <resource>
+                            <targetPath>target/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+

@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: xincan-k8s-provider
+  profiles:
+    active: @spring.profiles.active@
+
