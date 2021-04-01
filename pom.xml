@@ -65,12 +65,13 @@
 
     <profiles>
         <profile>
-            <id>dev</id>
+
+            <id>netflix</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <spring.profiles.active>dev</spring.profiles.active>
+                <spring.profiles.active>netflix</spring.profiles.active>
             </properties>
             <dependencies>
                 <!-- 集成eureka客户端依赖 -->
@@ -81,9 +82,9 @@
             </dependencies>
         </profile>
         <profile>
-            <id>pro</id>
+            <id>dev</id>
             <properties>
-                <spring.profiles.active>pro</spring.profiles.active>
+                <spring.profiles.active>dev</spring.profiles.active>
             </properties>
             <dependencies>
                 <dependency>
@@ -94,14 +95,21 @@
                     <groupId>org.springframework.cloud</groupId>
                     <artifactId>spring-cloud-kubernetes-discovery</artifactId>
                 </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>kubernetes</id>
+            <properties>
+                <spring.profiles.active>kubernetes</spring.profiles.active>
+            </properties>
+            <dependencies>
                 <dependency>
                     <groupId>org.springframework.cloud</groupId>
-                    <artifactId>spring-cloud-starter-kubernetes-loadbalancer</artifactId>
+                    <artifactId>spring-cloud-kubernetes-core</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>com.github.ben-manes.caffeine</groupId>
-                    <artifactId>caffeine</artifactId>
-                    <version>3.0.1</version>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-kubernetes-discovery</artifactId>
                 </dependency>
             </dependencies>
         </profile>
