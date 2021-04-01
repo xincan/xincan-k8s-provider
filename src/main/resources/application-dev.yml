@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: kubernetes
+    active: dev
   cloud:
     loadbalancer:
       ribbon:

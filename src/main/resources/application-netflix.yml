@@ -1,10 +1,13 @@
+server:
+  port: 8100
+
 spring:
   profiles:
-    active: dev
+    active: netflix
 
 eureka:
   instance:
-    hostname: 192.168.1.19
+    hostname: localhost
     port: 8761
     prefer-ip-address: true # 表示：将自己的ip注册到eureka
     instance-id: ${spring.cloud.client.ip-address}:${server.port} # 以[IP地址:端口号]作为注册地址
